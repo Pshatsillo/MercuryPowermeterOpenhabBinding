@@ -1,5 +1,7 @@
 # MercuryPowerMeter Binding
 
+#Биндинг openhab для счётчика Меркурий. Находится в разработке. Пожелания и предложения напрвляйте на почту. в данный момент рализую Протокол обмена трёхфазных счетчиков Меркурий (Mercury) 203.2TD, 204, 208, 230, 231, 234, 236, 238
+
 _Give some details about what this binding is meant for - a protocol, system, specific device._
 
 _If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
