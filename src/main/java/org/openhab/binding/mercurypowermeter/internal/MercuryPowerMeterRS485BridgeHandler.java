@@ -15,9 +15,8 @@ package org.openhab.binding.mercurypowermeter.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -49,15 +48,13 @@ import org.slf4j.LoggerFactory;
 public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(MercuryPowerMeterRS485BridgeHandler.class);
-
+    public static @Nullable HashMap<MercuryPowerMeter203tdHandler, ArrayList<MercuryPowerMeterPacket>> poll203tdList = new HashMap<MercuryPowerMeter203tdHandler, ArrayList<MercuryPowerMeterPacket>>();
     private @Nullable SerialPort serialPort;
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
     private final SerialPortManager serialPortManager;
 
     private @Nullable ScheduledFuture<?> pollingTask;
-    private int pollCounter;
-    private int serno;
 
     public MercuryPowerMeterRS485BridgeHandler(Bridge thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -81,7 +78,6 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
                         "Port " + config.serialPort + " is unknown!");
                 serialPort = null;
             } else {
-                // startPolling();
                 updateStatus(ThingStatus.UNKNOWN);
             }
 
@@ -102,7 +98,6 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
                 SerialPort serial = portId.open(getThing().getUID().toString(), 2000);
                 serial.setSerialPortParams(config.portSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-                // serial.addEventListener(this);
                 try {
                     if (inputStream != null) {
                         inputStream.close();
@@ -120,28 +115,22 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
 
                 inputStream = serial.getInputStream();
                 outputStream = serial.getOutputStream();
-
-                // serial.notifyOnDataAvailable(true);
                 serialPort = serial;
 
                 int[] data = new int[] { 0x00, 0x00 }; // Test connection
-                sendPacket(data, 4);
+                if (sendPacket(data, 4, 4)[1] == 0x00) {
 
-                data = new int[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 }; // Sending password 111111
-                sendPacket(data, 4);
-
-                data = new int[] { 0x00, 0x08, 0x05 }; // Getting network address
-                byte[] sno = sendPacket(data, 5);
-                serno = sno[2];
-                data = new int[] { serno, 0x08, 0x00 }; // Getting serNo
-                sendPacket(data, 10);
-
-                data = new int[] { serno, 0x08, 0x11, 0x40 }; // Getting serNo
-                sendPacket(data, 6);
-
-                startPolling();
-
-                updateStatus(ThingStatus.ONLINE);
+                    // data = new int[] { serno, 0x08, 0x00 }; // Getting serNo
+                    // sendPacket(data, 10);
+                    //
+                    // data = new int[] { serno, 0x08, 0x11, 0x40 }; // Getting serNo
+                    // sendPacket(data, 6);
+                    // startPolling();
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Powermeter does not answer");
+                }
 
             } catch (final IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
@@ -149,10 +138,6 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
             } catch (PortInUseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
                 logger.error("{}", e.getMessage());
-                // } catch (TooManyListenersException e) {
-                // logger.error("{}", e.getMessage());
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                // "Cannot attach listener to port!");
             } catch (UnsupportedCommOperationException e) {
                 logger.error("{}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -197,43 +182,6 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
 
     @Override
     public synchronized void serialEvent(SerialPortEvent serialPortEvent) {
-        // switch (serialPortEvent.getEventType()) {
-        // case SerialPortEvent.DATA_AVAILABLE:
-        // try {
-        // Thread.sleep(20);
-        // } catch (InterruptedException e) {
-        // }
-        // byte[] frame = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        // InputStream in = inputStream;
-        // if (in != null) {
-        // try {
-        // // if (in.available() > 0) {
-        // // byte[] printIn = in.readAllBytes();
-        // // StringBuilder sb = new StringBuilder(printIn.length * 2);
-        // // for (byte b : printIn)
-        // // sb.append(String.format("%02X ", b));
-        // // logger.info("receive: {}", sb);
-        // // }
-        // do {
-        // int cnt = 0;
-        // // read data from serial device
-        // while (cnt < 10 && in.available() > 0) {
-        // final int bytes = in.read(frame, cnt, 10);
-        // // if (cnt > 0 || frame[0] == 0x01) {
-        // // only proceed if the first byte was 0x01
-        // cnt += bytes;
-        // // }
-        // }
-        // } while (in.available() > 0);
-        // StringBuilder sb = new StringBuilder(frame.length * 2);
-        // for (byte b : frame)
-        // sb.append(String.format("%02X ", b));
-        // logger.info("receive: {}", sb);
-        // } catch (IOException e1) {
-        // logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
-        // }
-        // }
-        // }
     }
 
     public synchronized void startPolling() {
@@ -243,142 +191,95 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
             task.cancel(true);
         }
         if (config.pollPeriod > 0) {
-            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 10, config.pollPeriod, TimeUnit.SECONDS);
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 0, 1, TimeUnit.SECONDS);
         } else {
             pollingTask = null;
         }
     }
 
     public synchronized void polling() {
-        // MercuryPowerMeterConfiguration config = getConfigAs(MercuryPowerMeterConfiguration.class);
-        // MercuryPowerMeterCRC16Modbus crc = new MercuryPowerMeterCRC16Modbus();
-        // String strNum = String.valueOf(config.serialNumber);
-        // strNum = strNum.substring(strNum.length() - 3, strNum.length());
-        // int sn = Integer.parseInt(strNum);
-        // if (sn > 239) {
-        // String serNo = String.valueOf(sn).substring(1);
-        // sn = Integer.parseInt(serNo);
-        // if (sn == 0) {
-        // sn = 1;
-        // }
-        // }
-        // int[] data = new int[] { 0x00, 0x08, 0x05 }; // Mercury 236 test connection
-        //
-        // for (int d : data) {
-        // crc.update(d);
-        // }
-        // // System.out.println(Integer.toHexString((int) crc.getValue()));
-        // byte[] byteStr = new byte[2];
-        // byteStr[0] = (byte) ((crc.getValue() & 0x000000ff));
-        // byteStr[1] = (byte) ((crc.getValue() & 0x0000ff00) >>> 8);
-        // byte[] reqestString = new byte[data.length + 2];
-        // int bytelength = 0;
-        // for (int i = 0; i < data.length; i++) {
-        // reqestString[i] = (byte) data[i];
-        // bytelength++;
-        // }
-        // reqestString[reqestString.length - 2] = byteStr[0];
-        // reqestString[reqestString.length - 1] = byteStr[1];
-        // StringBuilder sb = new StringBuilder(reqestString.length * 2);
-        // for (byte b : reqestString)
-        // sb.append(String.format("%02X ", b));
-        // logger.info(" send: {}", sb);
-        //
+
         // try {
-        // OutputStream out = outputStream;
-        // if (out != null) {
-        // out.write(reqestString);
-        // out.flush();
+        // int[] data = new int[] { serno, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 }; // Sending password 111111
+        // sendPacket(data, 4);
+        //
+        // data = new int[] { serno, 0x05, 0x00, 0x00 }; // Mercury 236 test connection
+        // byte[] pd = sendPacket(data, 19);
+        // byte[] AplusTotal = new byte[] { pd[2], pd[1], pd[4], pd[3] };
+        // float AplusTotalnum = ByteBuffer.wrap(AplusTotal).getInt();
+        // float RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
+        // logger.debug("A+ total: {}, R+ total: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
+        // Thread.sleep(100);
+        // data = new int[] { serno, 0x05, 0x00, 0x01 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 19);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
+        // RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
+        // logger.debug("A+ T1: {}, R+ T1: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
+        // Thread.sleep(100);
+        // data = new int[] { serno, 0x05, 0x00, 0x02 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 19);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
+        // RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
+        // logger.debug("A+ T2: {}, R+ T2: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
+        // Thread.sleep(100);
+        // data = new int[] { serno, 0x05, 0x00, 0x03 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 19);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
+        // RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
+        // logger.debug("A+ T3: {}, R+ T3: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
+        //
+        // Thread.sleep(500);
+        // ArrayList<Float> val = new ArrayList<>();
+        // ;
+        // for (int i = 0; i < 3; i++) {
+        // data = new int[] { serno, 0x08, 0x11, 0x11 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // val.add(AplusTotalnum);
+        // }
+        // val.remove(Collections.max(val));
+        // val.remove(Collections.min(val));
+        //
+        // logger.debug("Voltage 1 : {}V", val.get(0) / 100);
+        //
         // Thread.sleep(50);
-        // }
-        // } catch (IOException e) {
-        // // in case we cannot write the connection is somehow broken, let's officially disconnect
-        // disconnect();
-        // connect();
+        // data = new int[] { serno, 0x08, 0x11, 0x12 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Voltage 2 : {}V", AplusTotalnum / 100);
+        //
+        // Thread.sleep(50);
+        // data = new int[] { serno, 0x08, 0x11, 0x13 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Voltage 3 : {}V", AplusTotalnum / 100);
+        //
+        // Thread.sleep(50);
+        // data = new int[] { serno, 0x08, 0x11, 0x21 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Current 1 : {}A", AplusTotalnum / 1000);
+        //
+        // Thread.sleep(50);
+        // data = new int[] { serno, 0x08, 0x11, 0x22 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Current 2 : {}A", AplusTotalnum / 1000);
+        //
+        // Thread.sleep(50);
+        // data = new int[] { serno, 0x08, 0x11, 0x23 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Current 3 : {}A", AplusTotalnum / 1000);
+        //
+        // Thread.sleep(50);
+        // data = new int[] { serno, 0x08, 0x14, 0x00 }; // Mercury 236 test connection
+        // pd = sendPacket(data, 6);
+        // AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+        // logger.debug("Current 3 : {}A", AplusTotalnum / 1000);
+        //
         // } catch (InterruptedException e) {
-        // // ignore if we got interrupted
         // }
-        try {
-            int[] data = new int[] { serno, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 }; // Sending password 111111
-            sendPacket(data, 4);
-
-            data = new int[] { serno, 0x05, 0x00, 0x00 }; // Mercury 236 test connection
-            byte[] pd = sendPacket(data, 19);
-            byte[] AplusTotal = new byte[] { pd[2], pd[1], pd[4], pd[3] };
-            float AplusTotalnum = ByteBuffer.wrap(AplusTotal).getInt();
-            float RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
-            logger.debug("A+ total: {}, R+ total: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
-            Thread.sleep(100);
-            data = new int[] { serno, 0x05, 0x00, 0x01 }; // Mercury 236 test connection
-            pd = sendPacket(data, 19);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
-            RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
-            logger.debug("A+ T1: {}, R+ T1: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
-            Thread.sleep(100);
-            data = new int[] { serno, 0x05, 0x00, 0x02 }; // Mercury 236 test connection
-            pd = sendPacket(data, 19);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
-            RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
-            logger.debug("A+ T2: {}, R+ T2: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
-            Thread.sleep(100);
-            data = new int[] { serno, 0x05, 0x00, 0x03 }; // Mercury 236 test connection
-            pd = sendPacket(data, 19);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { pd[2], pd[1], pd[4], pd[3] }).getInt();
-            RplusTotalnum = ByteBuffer.wrap(new byte[] { pd[10], pd[9], pd[12], pd[11] }).getInt();
-            logger.debug("A+ T3: {}, R+ T3: {}", AplusTotalnum / 1000, RplusTotalnum / 1000);
-
-            Thread.sleep(500);
-            ArrayList<Float> val = new ArrayList<>();
-            ;
-            for (int i = 0; i < 3; i++) {
-                data = new int[] { serno, 0x08, 0x11, 0x11 }; // Mercury 236 test connection
-                pd = sendPacket(data, 6);
-                AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-                val.add(AplusTotalnum);
-            }
-            val.remove(Collections.max(val));
-            val.remove(Collections.min(val));
-
-            logger.debug("Voltage 1 : {}V", val.get(0) / 100);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x11, 0x12 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Voltage 2 : {}V", AplusTotalnum / 100);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x11, 0x13 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Voltage 3 : {}V", AplusTotalnum / 100);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x11, 0x21 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Current 1 : {}A", AplusTotalnum / 1000);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x11, 0x22 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Current 2 : {}A", AplusTotalnum / 1000);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x11, 0x23 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Current 3 : {}A", AplusTotalnum / 1000);
-
-            Thread.sleep(50);
-            data = new int[] { serno, 0x08, 0x14, 0x00 }; // Mercury 236 test connection
-            pd = sendPacket(data, 6);
-            AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
-            logger.debug("Current 3 : {}A", AplusTotalnum / 1000);
-
-        } catch (InterruptedException e) {
-        }
     }
 
     public synchronized void stopPolling() {
@@ -399,21 +300,34 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
         super.dispose();
     }
 
-    public byte[] sendPacket(int[] data, int answerLenght) {
-        MercuryPowerMeterCRC16Modbus crc = new MercuryPowerMeterCRC16Modbus();
+    public byte[] sendPacket(int[] data, int answerLenght, int password) {
+        byte[] answer = new byte[answerLenght];
+        String pwdConv = Integer.toString(password);
+        if (pwdConv.length() == 6) {
+            int[] pswd = new int[pwdConv.length()];
+            for (int i = 0; i < pwdConv.length(); i++) {
+                pswd[i] = Integer.parseInt(String.valueOf(pwdConv.charAt(i)));
+            }
+            int[] getpass = new int[] { 0x00, 0x01, 0x01, pswd[0], pswd[1], pswd[2], pswd[3], pswd[4], pswd[5] };
+            byte[] pwdanswer = send(getpass, 4);
+            if (pwdanswer[1] == 0) {
+                answer = send(data, answerLenght);
+            }
+        }
+        return answer;
+    }
 
+    private byte[] send(int[] data, int answerLenght) {
+        MercuryPowerMeterCRC16Modbus crc = new MercuryPowerMeterCRC16Modbus();
         for (int d : data) {
             crc.update(d);
         }
-        // System.out.println(Integer.toHexString((int) crc.getValue()));
         byte[] byteStr = new byte[2];
         byteStr[0] = (byte) ((crc.getValue() & 0x000000ff));
         byteStr[1] = (byte) ((crc.getValue() & 0x0000ff00) >>> 8);
         byte[] reqestString = new byte[data.length + 2];
-        int bytelength = 0;
         for (int i = 0; i < data.length; i++) {
             reqestString[i] = (byte) data[i];
-            bytelength++;
         }
         reqestString[reqestString.length - 2] = byteStr[0];
         reqestString[reqestString.length - 1] = byteStr[1];
@@ -452,6 +366,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
                 logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
             }
         }
+        frame[2] = 107;
         return frame;
     }
 }

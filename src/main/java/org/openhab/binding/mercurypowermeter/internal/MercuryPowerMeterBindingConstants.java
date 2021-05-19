@@ -24,11 +24,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MercuryPowerMeterBindingConstants {
 
+    public static final String CHANNEL_VOLTAGE = "voltage";
     private static final String BINDING_ID = "mercurypowermeter";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID RS485_BRIDGE = new ThingTypeUID(BINDING_ID, "rs485");
-    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "powermeter");
+    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "powermeter203td");
 
     // List of all Channel ids
 }

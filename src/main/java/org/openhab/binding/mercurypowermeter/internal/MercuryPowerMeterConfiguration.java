@@ -28,5 +28,5 @@ public class MercuryPowerMeterConfiguration {
     public String serialPort = "";
     public int pollPeriod = 10;
     public int portSpeed = 9600;
-    public int serialNumber;
+    public int userpassword;
 }

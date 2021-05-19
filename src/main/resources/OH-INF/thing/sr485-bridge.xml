@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<bridge-type id="rs485">
 
 		<label>Bridge for rs485 serial connector</label>
@@ -20,15 +19,6 @@
 				<label>Port speed</label>
 				<description>Speed of the com-port connection.</description>
 				<default>9600</default>
-			</parameter>
-			<parameter name="pollPeriod" type="integer" min="1" unit="s">
-				<label>Poll Period</label>
-				<description>The poll period in seconds.</description>
-				<default>10</default>
-			</parameter>
-			<parameter name="serialNumber" type="integer" required="true">
-				<label>Serial number</label>
-				<description></description>
 			</parameter>
 		</config-description>
 	</bridge-type>

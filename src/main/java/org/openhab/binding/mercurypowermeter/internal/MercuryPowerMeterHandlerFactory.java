@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mercurypowermeter", service = ThingHandlerFactory.class)
 public class MercuryPowerMeterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(RS485_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(RS485_BRIDGE, MERCURY_POWERMETER_THING);
     private final SerialPortManager serialPortManager;
 
     @Activate
@@ -58,6 +58,9 @@ public class MercuryPowerMeterHandlerFactory extends BaseThingHandlerFactory {
 
         if (RS485_BRIDGE.equals(thingTypeUID)) {
             return new MercuryPowerMeterRS485BridgeHandler((Bridge) thing, serialPortManager);
+        }
+        if (MERCURY_POWERMETER_THING.equals(thingTypeUID)) {
+            return new MercuryPowerMeter203tdHandler(thing);
         }
 
         return null;
