@@ -25,8 +25,16 @@ import org.openhab.core.thing.ThingTypeUID;
 public class MercuryEnergyMeterBindingConstants {
 
     public static final String CHANNEL_VOLTAGE_1 = "voltage1";
-    public static final String CHANNEL_VOLTAGE_2 = "voltage1";
-    public static final String CHANNEL_VOLTAGE_3 = "voltage1";
+    public static final String CHANNEL_VOLTAGE_2 = "voltage2";
+    public static final String CHANNEL_VOLTAGE_3 = "voltage3";
+    public static final String CHANNEL_CURRENT_1 = "current1";
+    public static final String CHANNEL_CURRENT_2 = "current2";
+    public static final String CHANNEL_CURRENT_3 = "current3";
+    public static final String CHANNEL_ENERGY_ACTIVE_TOTAL = "energyactivetotal";
+    public static final String CHANNEL_ENERGY_1 = "energyactive1";
+    public static final String CHANNEL_ENERGY_2 = "energyactive2";
+    public static final String CHANNEL_ENERGY_3 = "energyactive3";
+
     private static final String BINDING_ID = "mercuryenergymeter";
 
     // List of all Thing Type UIDs

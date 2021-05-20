@@ -369,7 +369,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
             }
         }
-        frame[2] = 107;
+        // frame[2] = 107;
         return frame;
     }
 }
