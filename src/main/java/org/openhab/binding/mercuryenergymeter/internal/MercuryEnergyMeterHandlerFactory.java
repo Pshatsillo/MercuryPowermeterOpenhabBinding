@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
-import static org.openhab.binding.mercurypowermeter.internal.MercuryPowerMeterBindingConstants.*;
+import static org.openhab.binding.mercuryenergymeter.internal.MercuryEnergyMeterBindingConstants.*;
 
 import java.util.Set;
 
@@ -30,20 +30,20 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link MercuryPowerMeterHandlerFactory} is responsible for creating things and thing
+ * The {@link MercuryEnergyMeterHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.mercurypowermeter", service = ThingHandlerFactory.class)
-public class MercuryPowerMeterHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.mercuryenergymeter", service = ThingHandlerFactory.class)
+public class MercuryEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(RS485_BRIDGE, MERCURY_POWERMETER_THING);
     private final SerialPortManager serialPortManager;
 
     @Activate
-    public MercuryPowerMeterHandlerFactory(@Reference SerialPortManager serialPortManager) {
+    public MercuryEnergyMeterHandlerFactory(@Reference SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
     }
 
@@ -57,10 +57,10 @@ public class MercuryPowerMeterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (RS485_BRIDGE.equals(thingTypeUID)) {
-            return new MercuryPowerMeterRS485BridgeHandler((Bridge) thing, serialPortManager);
+            return new MercuryEnergyMeterRS485BridgeHandler((Bridge) thing, serialPortManager);
         }
         if (MERCURY_POWERMETER_THING.equals(thingTypeUID)) {
-            return new MercuryPowerMeter203tdHandler(thing);
+            return new MercuryEnergyMeter203tdHandler(thing);
         }
 
         return null;

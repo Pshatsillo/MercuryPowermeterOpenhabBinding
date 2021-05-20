@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MercuryPowerMeterConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MercuryEnergyMeterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryPowerMeterConfiguration {
+public class MercuryEnergyMeterConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.

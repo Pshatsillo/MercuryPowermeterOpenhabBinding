@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.discovery;
+package org.openhab.binding.mercuryenergymeter.discovery;
 
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mercurypowermeter.internal.MercuryPowerMeterBindingConstants;
+import org.openhab.binding.mercuryenergymeter.internal.MercuryEnergyMeterBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.osgi.service.component.annotations.Component;
@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mercurypowermeter")
 @NonNullByDefault
-public class MercuryPowerMeterDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(MercuryPowerMeterDiscoveryService.class);
+public class MercuryEnergyMeterDiscoveryService extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(MercuryEnergyMeterDiscoveryService.class);
 
-    public MercuryPowerMeterDiscoveryService() {
-        super(Collections.singleton(MercuryPowerMeterBindingConstants.MERCURY_POWERMETER_THING), 30, true);
+    public MercuryEnergyMeterDiscoveryService() {
+        super(Collections.singleton(MercuryEnergyMeterBindingConstants.MERCURY_POWERMETER_THING), 30, true);
     }
 
     @Override

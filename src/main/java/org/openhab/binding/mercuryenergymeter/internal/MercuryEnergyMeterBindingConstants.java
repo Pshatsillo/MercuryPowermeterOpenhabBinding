@@ -10,26 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MercuryPowerMeterBindingConstants} class defines common constants, which are
+ * The {@link MercuryEnergyMeterBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryPowerMeterBindingConstants {
+public class MercuryEnergyMeterBindingConstants {
 
-    public static final String CHANNEL_VOLTAGE = "voltage";
-    private static final String BINDING_ID = "mercurypowermeter";
+    public static final String CHANNEL_VOLTAGE_1 = "voltage1";
+    public static final String CHANNEL_VOLTAGE_2 = "voltage1";
+    public static final String CHANNEL_VOLTAGE_3 = "voltage1";
+    private static final String BINDING_ID = "mercuryenergymeter";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID RS485_BRIDGE = new ThingTypeUID(BINDING_ID, "rs485");
-    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "powermeter203td");
+    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "energymeter203td");
 
     // List of all Channel ids
 }

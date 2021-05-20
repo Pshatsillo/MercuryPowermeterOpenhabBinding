@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 import java.util.zip.Checksum;
 
@@ -18,13 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MercuryPowerMeterCRC16Modbus} is responsible for handling commands, which are
+ * The {@link MercuryEnergyMeterCRC16Modbus} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryPowerMeterCRC16Modbus implements Checksum {
+public class MercuryEnergyMeterCRC16Modbus implements Checksum {
     private static final int[] TABLE = { 0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241, 0xc601, 0x06c0,
             0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440, 0xcc01, 0x0cc0, 0x0d80, 0xcd41, 0x0f00, 0xcfc1, 0xce81,
             0x0e40, 0x0a00, 0xcac1, 0xcb81, 0x0b40, 0xc901, 0x09c0, 0x0880, 0xc841, 0xd801, 0x18c0, 0x1980, 0xd941,

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,29 +29,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MercuryPowerMeter203tdHandler} is responsible for creating things and thing
+ * The {@link MercuryEnergyMeter203tdHandler} is responsible for creating things and thing
  * handlers.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryPowerMeter203tdHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(MercuryPowerMeter203tdHandler.class);
+public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(MercuryEnergyMeter203tdHandler.class);
 
     private @Nullable ScheduledFuture<?> pollingTask;
     int poll;
     int pass;
     int serno;
     @Nullable
-    MercuryPowerMeterRS485BridgeHandler bridgeHandler;
+    MercuryEnergyMeterRS485BridgeHandler bridgeHandler;
 
-    public MercuryPowerMeter203tdHandler(Thing thing) {
+    public MercuryEnergyMeter203tdHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        MercuryPowerMeterConfiguration config = getConfigAs(MercuryPowerMeterConfiguration.class);
+        MercuryEnergyMeterConfiguration config = getConfigAs(MercuryEnergyMeterConfiguration.class);
         bridgeHandler = getBridgeHandler();
         pass = config.userpassword;
         poll = config.pollPeriod;
@@ -67,11 +67,11 @@ public class MercuryPowerMeter203tdHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Network address is " + serno);
     }
 
-    private @Nullable MercuryPowerMeterRS485BridgeHandler getBridgeHandler() {
+    private @Nullable MercuryEnergyMeterRS485BridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            if (bridge.getHandler() instanceof MercuryPowerMeterRS485BridgeHandler) {
-                return (MercuryPowerMeterRS485BridgeHandler) bridge.getHandler();
+            if (bridge.getHandler() instanceof MercuryEnergyMeterRS485BridgeHandler) {
+                return (MercuryEnergyMeterRS485BridgeHandler) bridge.getHandler();
             }
         }
         return null;
@@ -80,7 +80,7 @@ public class MercuryPowerMeter203tdHandler extends BaseThingHandler {
     private void poll() {
         for (Channel channel : getThing().getChannels()) {
             if (isLinked(channel.getUID().getId())) {
-                if (channel.getUID().getId().equals(MercuryPowerMeterBindingConstants.CHANNEL_VOLTAGE)) {
+                if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_VOLTAGE_1)) {
                     logger.debug("voltage channel");
                 }
             }

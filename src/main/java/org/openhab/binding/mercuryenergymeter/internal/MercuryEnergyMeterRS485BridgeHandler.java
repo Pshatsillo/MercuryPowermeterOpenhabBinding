@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,16 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MercuryPowerMeterRS485BridgeHandler} is responsible for handling commands, which are
+ * The {@link MercuryEnergyMeterRS485BridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
+public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
-    private final Logger logger = LoggerFactory.getLogger(MercuryPowerMeterRS485BridgeHandler.class);
-    public static @Nullable HashMap<MercuryPowerMeter203tdHandler, ArrayList<MercuryPowerMeterPacket>> poll203tdList = new HashMap<MercuryPowerMeter203tdHandler, ArrayList<MercuryPowerMeterPacket>>();
+    private final Logger logger = LoggerFactory.getLogger(MercuryEnergyMeterRS485BridgeHandler.class);
+    public static @Nullable HashMap<MercuryEnergyMeter203tdHandler, ArrayList<MercuryEnergyMeterPacket>> poll203tdList = new HashMap<MercuryEnergyMeter203tdHandler, ArrayList<MercuryEnergyMeterPacket>>();
     private @Nullable SerialPort serialPort;
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
@@ -56,7 +56,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
 
     private @Nullable ScheduledFuture<?> pollingTask;
 
-    public MercuryPowerMeterRS485BridgeHandler(Bridge thing, final SerialPortManager serialPortManager) {
+    public MercuryEnergyMeterRS485BridgeHandler(Bridge thing, final SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
     }
@@ -67,7 +67,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
 
     @Override
     public void initialize() {
-        MercuryPowerMeterConfiguration config = getConfigAs(MercuryPowerMeterConfiguration.class);
+        MercuryEnergyMeterConfiguration config = getConfigAs(MercuryEnergyMeterConfiguration.class);
         if (config.serialPort.length() < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
@@ -86,7 +86,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
     }
 
     private synchronized void connect() {
-        MercuryPowerMeterConfiguration config = getConfigAs(MercuryPowerMeterConfiguration.class);
+        MercuryEnergyMeterConfiguration config = getConfigAs(MercuryEnergyMeterConfiguration.class);
         SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
         if (portId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -174,9 +174,12 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
             if (serial != null) {
                 serial.close();
             }
-            serialPort.close();
-            serialPort = null;
-            logger.info("disconnected port");
+            try {
+                serialPort.close();
+                serialPort = null;
+                logger.info("disconnected port");
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -185,7 +188,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
     }
 
     public synchronized void startPolling() {
-        MercuryPowerMeterConfiguration config = getConfigAs(MercuryPowerMeterConfiguration.class);
+        MercuryEnergyMeterConfiguration config = getConfigAs(MercuryEnergyMeterConfiguration.class);
         final ScheduledFuture<?> task = pollingTask;
         if (task != null && task.isCancelled()) {
             task.cancel(true);
@@ -318,7 +321,7 @@ public class MercuryPowerMeterRS485BridgeHandler extends BaseBridgeHandler imple
     }
 
     private byte[] send(int[] data, int answerLenght) {
-        MercuryPowerMeterCRC16Modbus crc = new MercuryPowerMeterCRC16Modbus();
+        MercuryEnergyMeterCRC16Modbus crc = new MercuryEnergyMeterCRC16Modbus();
         for (int d : data) {
             crc.update(d);
         }

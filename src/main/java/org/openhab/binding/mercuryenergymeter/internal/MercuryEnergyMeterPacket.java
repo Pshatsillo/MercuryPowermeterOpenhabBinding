@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercurypowermeter.internal;
+package org.openhab.binding.mercuryenergymeter.internal;
 
 /**
- * The {@link MercuryPowerMeterPacket} is responsible for creating things and thing
+ * The {@link MercuryEnergyMeterPacket} is responsible for creating things and thing
  * handlers.
  *
  * @author Petr Shatsillo - Initial contribution
  */
-public class MercuryPowerMeterPacket {
+public class MercuryEnergyMeterPacket {
     int[] packetArray;
     int bytecount;
     String channel;

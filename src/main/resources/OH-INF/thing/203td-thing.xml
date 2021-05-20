@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mercurypowermeter"
+<thing:thing-descriptions bindingId="mercuryenergymeter"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="powermeter203td">
+	<thing-type id="energymeter203td">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="rs485"/>
 		</supported-bridge-type-refs>
 
 		<label>Thing for Mercury 203.2TD series</label>
-		<description>Protocol is available for 203.2TD, 204, 208, 230, 231, 234, 236, 238 powermeters</description>
+		<description>Protocol is available for 203.2TD, 204, 208, 230, 231, 234, 236, 238 Energy meters</description>
 
 		<channels>
-			<channel id="voltage" typeId="voltage"/>
+			<channel id="voltage1" typeId="voltage"/>
+			<channel id="voltage2" typeId="voltage"/>
+			<channel id="voltage3" typeId="voltage"/>
+			<channel id="current1" typeId="current"/>
+			<channel id="current2" typeId="current"/>
+			<channel id="current3" typeId="current"/>
 		</channels>
 		<config-description>
 			<parameter name="pollPeriod" type="integer" min="0" unit="s">
@@ -23,7 +28,7 @@
 			</parameter>
 			<parameter name="userpassword" type="integer">
 				<label>Password</label>
-				<description>Password for user access to powermeter (6 digits). Leave it default if you don't know</description>
+				<description>Password for user access to energy meter (6 digits). Leave it default if you don't know</description>
 				<default>111111</default>
 			</parameter>
 		</config-description>
@@ -32,5 +37,10 @@
 		<item-type>Number</item-type>
 		<label>Voltage</label>
 		<description>Voltage parameter</description>
+	</channel-type>
+	<channel-type id="current">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<description>Current parameter</description>
 	</channel-type>
 </thing:thing-descriptions>
