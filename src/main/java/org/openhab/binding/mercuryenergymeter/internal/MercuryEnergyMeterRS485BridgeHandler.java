@@ -118,7 +118,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 serialPort = serial;
 
                 int[] data = new int[] { 0x00, 0x00 }; // Test connection
-                if (sendPacket(data, 4, 4)[1] == 0x00) {
+                if (sendPacket(data, 4, 111111)[1] == 0x00) {
 
                     // data = new int[] { serno, 0x08, 0x00 }; // Getting serNo
                     // sendPacket(data, 10);
@@ -344,7 +344,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
             if (out != null) {
                 out.write(reqestString);
                 out.flush();
-                Thread.sleep(100);
+                Thread.sleep(200);
             }
         } catch (IOException | InterruptedException e) {
 
@@ -354,13 +354,9 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
         InputStream in = inputStream;
         if (in != null) {
             try {
-                do {
-                    int cnt = 0;
-                    while (cnt < 10 && in.available() > 0) {
-                        final int bytes = in.read(frame, cnt, answerLenght);
-                        cnt += bytes;
-                    }
-                } while (in.available() > 0);
+                while (in.available() > 0) {
+                    in.read(frame);
+                }
                 StringBuilder sbl = new StringBuilder(frame.length * 2);
                 for (byte b : frame)
                     sbl.append(String.format("%02X ", b));

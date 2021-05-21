@@ -59,18 +59,23 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
         bridgeHandler = getBridgeHandler();
         pass = config.userpassword;
         poll = config.pollPeriod;
-        int[] data = new int[] { 0x00, 0x08, 0x05 }; // Getting network address
-        serno = bridgeHandler.sendPacket(data, 4, pass)[2];
-        int trytoget = 0;
+        scheduler.execute(this::getserial);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for energy meter serial number");
+    }
 
+    private void getserial() {
+        int[] data = new int[] { 0x00, 0x08, 0x05 }; // Getting network address
+
+        int trytoget = 0;
         while (serno == 0) {
+            serno = bridgeHandler.sendPacket(data, 4, pass)[2];
             if (trytoget == 4) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "Cannot get network address");
             }
             trytoget++;
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
         }
@@ -156,8 +161,11 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     val.remove(Collections.max(val));
                     val.remove(Collections.min(val));
                     try {
-                        updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 1000)));
-                        logger.debug("Current 1 : {}A", val.get(0) / 1000);
+                        if (val.get(0) != 0) {
+                            updateState(channel.getUID().getId(),
+                                    DecimalType.valueOf(String.valueOf(val.get(0) / 1000)));
+                            logger.debug("Current 1 : {}A", val.get(0) / 1000);
+                        }
                     } catch (Exception ignore) {
                     }
                 } else if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_CURRENT_2)) {
