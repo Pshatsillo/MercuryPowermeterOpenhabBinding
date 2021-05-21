@@ -150,7 +150,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
     }
 
     private void disconnect() {
-        logger.info("disconnecting port...");
+        logger.debug("disconnecting port...");
         if (thing.getStatus() != ThingStatus.REMOVING) {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -177,7 +177,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
             try {
                 serialPort.close();
                 serialPort = null;
-                logger.info("disconnected port");
+                logger.debug("disconnected port");
             } catch (Exception ignored) {
             }
         }
@@ -286,18 +286,18 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
     }
 
     public synchronized void stopPolling() {
-        logger.info("stopping polling");
+        logger.debug("stopping polling");
         final ScheduledFuture<?> task = pollingTask;
         if (task != null && !task.isCancelled()) {
             task.cancel(true);
             pollingTask = null;
-            logger.info("polling stop");
+            logger.debug("polling stop");
         }
     }
 
     @Override
     public void dispose() {
-        logger.info("Disposing...");
+        logger.debug("Disposing...");
         stopPolling();
         disconnect();
         super.dispose();
@@ -337,7 +337,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
         StringBuilder sb = new StringBuilder(reqestString.length * 2);
         for (byte b : reqestString)
             sb.append(String.format("%02X ", b));
-        logger.info("   send: {}", sb);
+        logger.debug("   send: {}", sb);
 
         try {
             OutputStream out = outputStream;
@@ -360,7 +360,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 StringBuilder sbl = new StringBuilder(frame.length * 2);
                 for (byte b : frame)
                     sbl.append(String.format("%02X ", b));
-                logger.info("receive: {}", sbl);
+                logger.debug("receive: {}", sbl);
             } catch (IOException e1) {
                 logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
             }
