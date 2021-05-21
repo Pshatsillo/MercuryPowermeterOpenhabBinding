@@ -69,9 +69,10 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
         int trytoget = 0;
         while (serno == 0) {
             serno = bridgeHandler.sendPacket(data, 4, pass)[2];
-            if (trytoget == 4) {
+            if (trytoget > 4) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "Cannot get network address");
+                break;
             }
             trytoget++;
             try {
