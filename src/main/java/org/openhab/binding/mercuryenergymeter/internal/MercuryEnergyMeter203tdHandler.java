@@ -64,6 +64,7 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
     }
 
     private void getserial() {
+        logger.debug("getserial");
         int[] data = new int[] { 0x00, 0x08, 0x05 }; // Getting network address
 
         int trytoget = 0;
@@ -281,8 +282,7 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                         logger.debug("A+ T2: {} kWh", val.get(0) / 1000);
                     } catch (Exception ignore) {
                     }
-                } else if (channel.getUID().getId()
-                        .equals(MercuryEnergyMeterBindingConstants.CHANNEL_ENERGY_ACTIVE_TOTAL)) {
+                } else if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_ENERGY_3)) {
                     ArrayList<Float> val = new ArrayList<>();
                     for (int i = 0; i < 3; i++) {
                         try {
@@ -299,6 +299,67 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     try {
                         updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 1000)));
                         logger.debug("A+ T3: {} kWh", val.get(0) / 1000);
+                    } catch (Exception ignore) {
+                    }
+                } else if (channel.getUID().getId()
+                        .equals(MercuryEnergyMeterBindingConstants.CHANNEL_POWER_ACTIVE_TOTAL)) {
+                    ArrayList<Float> val = new ArrayList<>();
+                    for (int i = 0; i < 3; i++) {
+                        int[] data = new int[] { serno, 0x08, 0x11, 0x00 }; // Mercury 236 test connection
+                        byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        val.add(AplusTotalnum);
+                    }
+                    val.remove(Collections.max(val));
+                    val.remove(Collections.min(val));
+                    try {
+                        updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 100)));
+                        logger.debug("Power total: {} W", val.get(0) / 100);
+                    } catch (Exception ignore) {
+                    }
+                } else if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_POWER_1)) {
+                    ArrayList<Float> val = new ArrayList<>();
+                    for (int i = 0; i < 3; i++) {
+                        int[] data = new int[] { serno, 0x08, 0x11, 0x01 }; // Mercury 236 test connection
+                        byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        val.add(AplusTotalnum);
+                    }
+                    val.remove(Collections.max(val));
+                    val.remove(Collections.min(val));
+                    try {
+                        updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 100)));
+                        logger.debug("Power T1: {} W", val.get(0) / 100);
+                    } catch (Exception ignore) {
+                    }
+                } else if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_POWER_2)) {
+                    ArrayList<Float> val = new ArrayList<>();
+                    for (int i = 0; i < 3; i++) {
+                        int[] data = new int[] { serno, 0x08, 0x11, 0x02 }; // Mercury 236 test connection
+                        byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        val.add(AplusTotalnum);
+                    }
+                    val.remove(Collections.max(val));
+                    val.remove(Collections.min(val));
+                    try {
+                        updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 100)));
+                        logger.debug("Power T2: {} W", val.get(0) / 100);
+                    } catch (Exception ignore) {
+                    }
+                } else if (channel.getUID().getId().equals(MercuryEnergyMeterBindingConstants.CHANNEL_POWER_3)) {
+                    ArrayList<Float> val = new ArrayList<>();
+                    for (int i = 0; i < 3; i++) {
+                        int[] data = new int[] { serno, 0x08, 0x11, 0x03 }; // Mercury 236 test connection
+                        byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        val.add(AplusTotalnum);
+                    }
+                    val.remove(Collections.max(val));
+                    val.remove(Collections.min(val));
+                    try {
+                        updateState(channel.getUID().getId(), DecimalType.valueOf(String.valueOf(val.get(0) / 100)));
+                        logger.debug("Power T3: {} W", val.get(0) / 100);
                     } catch (Exception ignore) {
                     }
                 }
