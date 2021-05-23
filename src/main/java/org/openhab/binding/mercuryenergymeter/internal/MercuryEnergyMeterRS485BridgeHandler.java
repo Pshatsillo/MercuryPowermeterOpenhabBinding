@@ -311,6 +311,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
             for (int i = 0; i < pwdConv.length(); i++) {
                 pswd[i] = Integer.parseInt(String.valueOf(pwdConv.charAt(i)));
             }
+            // int[] getpass = new int[] { 0x00, 0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02 };
             int[] getpass = new int[] { 0x00, 0x01, 0x01, pswd[0], pswd[1], pswd[2], pswd[3], pswd[4], pswd[5] };
             byte[] pwdanswer = send(getpass, 4);
             if (pwdanswer[1] == 0) {

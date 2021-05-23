@@ -307,7 +307,8 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     for (int i = 0; i < 3; i++) {
                         int[] data = new int[] { serno, 0x08, 0x11, 0x00 }; // Mercury 236 test connection
                         byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
-                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, (byte) (pd[1] & 0x3F), pd[3], pd[2] })
+                                .getInt();
                         val.add(AplusTotalnum);
                     }
                     val.remove(Collections.max(val));
@@ -322,7 +323,8 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     for (int i = 0; i < 3; i++) {
                         int[] data = new int[] { serno, 0x08, 0x11, 0x01 }; // Mercury 236 test connection
                         byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
-                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, (byte) (pd[1] & 0x3F), pd[3], pd[2] })
+                                .getInt();
                         val.add(AplusTotalnum);
                     }
                     val.remove(Collections.max(val));
@@ -337,7 +339,8 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     for (int i = 0; i < 3; i++) {
                         int[] data = new int[] { serno, 0x08, 0x11, 0x02 }; // Mercury 236 test connection
                         byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
-                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, (byte) (pd[1] & 0x3F), pd[3], pd[2] })
+                                .getInt();
                         val.add(AplusTotalnum);
                     }
                     val.remove(Collections.max(val));
@@ -352,7 +355,8 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
                     for (int i = 0; i < 3; i++) {
                         int[] data = new int[] { serno, 0x08, 0x11, 0x03 }; // Mercury 236 test connection
                         byte[] pd = bridgeHandler.sendPacket(data, 6, pass);
-                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, pd[1], pd[3], pd[2] }).getInt();
+                        float AplusTotalnum = ByteBuffer.wrap(new byte[] { 0x00, (byte) (pd[1] & 0x3F), pd[3], pd[2] })
+                                .getInt();
                         val.add(AplusTotalnum);
                     }
                     val.remove(Collections.max(val));
