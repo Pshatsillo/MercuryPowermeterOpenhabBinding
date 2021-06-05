@@ -1,58 +1,63 @@
 # Mercury energy meter binding
 
-# Биндинг openhab для счётчика Меркурий. Находится в разработке. Пожелания и предложения напрвляйте на почту. в данный момент рализую Протокол обмена трёхфазных счетчиков Меркурий (Mercury) 203.2TD, 204, 208, 230, 231, 234, 236, 238
+# Биндинг openhab для счётчика Меркурий. Находится в разработке. Пожелания и предложения напрвляйте на почту или feature request.
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+_В данный момент рализован протокол обмена трёхфазных счетчиков Меркурий (Mercury) 203.2TD, 204, 208, 230, 231, 234, 236, 238_
 
 ## Supported Things
+_Bridge_
+```rs485``` - Мост для подключения к последовательному порту
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+_Thing_
+``` energymeter203td ``` - Реализует протокол считывания данных
 
 ## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the MercuryPowerMeter Binding
-#
-# Default secret key for the pairing of the MercuryPowerMeter Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Пока не реализовано
 
 ## Thing Configuration
+_Bridge_ - ```serialPort, portSpeed```\
+```serialPort``` указывается обязательно\
+```portSpeed``` по умолчанию 9600
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+_Thing_ energymeter203td - ```pollPeriod, userpassword```, имеют значения по умолчанию 60 секунд и 111111 соответственно
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| voltage1(2,3)  | Number | напряжение на фазах  |
+| current1(2,3)  | Number | сила тока на фазах  |
+| power1(2,3)  | Number | мощность на фазах  |
+| powertotal  | Number | мощность на всех фазах  |
+| energyactive1(2,3)  | Number | расход энергии на фазах  |
+| energyactivetotal  | Number | расход энергии на всех фазах  |
+
 
 ## Full Example
+.things
+```
+Bridge mercuryenergymeter:rs485:rsBridge [serialPort="COM4", portSpeed=9600]{
+Thing energymeter203td meter [pollPeriod=1]
+}
+```
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+.items
+```
+Number VoltageFase1 "Напряжение в 1 фазе" ["Point", "Voltage"]{ga="Sensor" [sensorName="Voltage"], channel="mercuryenergymeter:energymeter203td:rsBridge:meter:voltage1"}
+Number VoltageFase2 "Напряжение в 2 фазе" ["Point", "Voltage"]{ga="Sensor" [sensorName="Voltage"], channel="mercuryenergymeter:energymeter203td:rsBridge:meter:voltage2"}
+Number VoltageFase3 "Напряжение в 3 фазе" ["Point", "Voltage"]{ga="Sensor" [sensorName="Voltage"], channel="mercuryenergymeter:energymeter203td:rsBridge:meter:voltage3"}
 
-## Any custom content here!
+Number CurrentFase1 "Сила тока в 1 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current1"}
+Number CurrentFase1 "Сила тока в 2 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current2"}
+Number CurrentFase1 "Сила тока в 3 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current3"}
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Number TotalPower "Суммарная мощность по фазам" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:powertotal"}
+Number TotalPower1 "Мощность в 1 фазе" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:power1"}
+Number TotalPower2 "Мощность в 2 фазе" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:power2"}
+Number TotalPower3 "Мощность в 3 фазе" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:power3"}
+
+Number ActiveEnergyTotal "Общий расход активной энергии" ["Point", "Energy"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:energyactivetotal"}
+Number ActiveEnergy1 "Расход активной энергии на 1 фазе" ["Point", "Energy"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:energyactive1"}
+Number ActiveEnergy2 "Расход активной энергии на 2 фазе" ["Point", "Energy"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:energyactive2"}
+Number ActiveEnergy3 "Расход активной энергии на 3 фазе" ["Point", "Energy"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:energyactive3"}
+```
