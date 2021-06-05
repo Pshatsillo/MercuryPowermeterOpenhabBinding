@@ -48,8 +48,8 @@ Number VoltageFase2 "Напряжение в 2 фазе" ["Point", "Voltage"]{ga
 Number VoltageFase3 "Напряжение в 3 фазе" ["Point", "Voltage"]{ga="Sensor" [sensorName="Voltage"], channel="mercuryenergymeter:energymeter203td:rsBridge:meter:voltage3"}
 
 Number CurrentFase1 "Сила тока в 1 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current1"}
-Number CurrentFase1 "Сила тока в 2 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current2"}
-Number CurrentFase1 "Сила тока в 3 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current3"}
+Number CurrentFase2 "Сила тока в 2 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current2"}
+Number CurrentFase3 "Сила тока в 3 фазе" ["Point", "Current"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:current3"}
 
 Number TotalPower "Суммарная мощность по фазам" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:powertotal"}
 Number TotalPower1 "Мощность в 1 фазе" ["Point", "Power"]{channel="mercuryenergymeter:energymeter203td:rsBridge:meter:power1"}
