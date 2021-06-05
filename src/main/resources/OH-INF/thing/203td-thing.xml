@@ -24,9 +24,9 @@
 			<channel id="energyactive2" typeId="energy2"/>
 			<channel id="energyactive3" typeId="energy3"/>
 			<channel id="powertotal" typeId="powertotal"/>
-			<channel id="power1" typeId="powertotal"/>
-			<channel id="power2" typeId="powertotal"/>
-			<channel id="power3" typeId="powertotal"/>
+			<channel id="power1" typeId="power1"/>
+			<channel id="power2" typeId="power2"/>
+			<channel id="power3" typeId="power3"/>
 		</channels>
 		<config-description>
 			<parameter name="pollPeriod" type="integer" min="0" unit="s">
