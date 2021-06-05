@@ -13,16 +13,16 @@
 		<description>Protocol is available for 203.2TD, 204, 208, 230, 231, 234, 236, 238 Energy meters</description>
 
 		<channels>
-			<channel id="voltage1" typeId="voltage"/>
-			<channel id="voltage2" typeId="voltage"/>
-			<channel id="voltage3" typeId="voltage"/>
-			<channel id="current1" typeId="current"/>
-			<channel id="current2" typeId="current"/>
-			<channel id="current3" typeId="current"/>
-			<channel id="energyactivetotal" typeId="energy"/>
-			<channel id="energyactive1" typeId="energy"/>
-			<channel id="energyactive2" typeId="energy"/>
-			<channel id="energyactive3" typeId="energy"/>
+			<channel id="voltage1" typeId="voltage1"/>
+			<channel id="voltage2" typeId="voltage2"/>
+			<channel id="voltage3" typeId="voltage3"/>
+			<channel id="current1" typeId="current1"/>
+			<channel id="current2" typeId="current2"/>
+			<channel id="current3" typeId="current3"/>
+			<channel id="energyactivetotal" typeId="energytotal"/>
+			<channel id="energyactive1" typeId="energy1"/>
+			<channel id="energyactive2" typeId="energy2"/>
+			<channel id="energyactive3" typeId="energy3"/>
 			<channel id="powertotal" typeId="powertotal"/>
 			<channel id="power1" typeId="powertotal"/>
 			<channel id="power2" typeId="powertotal"/>
@@ -41,24 +41,79 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="voltage">
+	<channel-type id="voltage1">
 		<item-type>Number</item-type>
-		<label>Voltage</label>
+		<label>Voltage F1</label>
 		<description>Voltage parameter</description>
 	</channel-type>
-	<channel-type id="current">
+	<channel-type id="voltage2">
 		<item-type>Number</item-type>
-		<label>Current</label>
+		<label>Voltage F2</label>
+		<description>Voltage parameter</description>
+	</channel-type>
+	<channel-type id="voltage3">
+		<item-type>Number</item-type>
+		<label>Voltage F3</label>
+		<description>Voltage parameter</description>
+	</channel-type>
+	<channel-type id="current1">
+		<item-type>Number</item-type>
+		<label>Current F1</label>
 		<description>Current parameter</description>
 	</channel-type>
-	<channel-type id="energy">
+
+	<channel-type id="current2">
 		<item-type>Number</item-type>
-		<label>Energy</label>
+		<label>Current F2</label>
+		<description>Current parameter</description>
+	</channel-type>
+
+	<channel-type id="current3">
+		<item-type>Number</item-type>
+		<label>Current F3</label>
+		<description>Current parameter</description>
+	</channel-type>
+
+	<channel-type id="energytotal">
+		<item-type>Number</item-type>
+		<label>Total energy</label>
+		<description>Energy parameter</description>
+	</channel-type>
+
+	<channel-type id="energy1">
+		<item-type>Number</item-type>
+		<label>Energy F1</label>
+		<description>Energy parameter</description>
+	</channel-type>
+	<channel-type id="energy2">
+		<item-type>Number</item-type>
+		<label>Energy F2</label>
+		<description>Energy parameter</description>
+	</channel-type>
+	<channel-type id="energy3">
+		<item-type>Number</item-type>
+		<label>Energy F3</label>
 		<description>Energy parameter</description>
 	</channel-type>
 	<channel-type id="powertotal">
 		<item-type>Number</item-type>
 		<label>Power</label>
+		<description>Power parameter</description>
+	</channel-type>
+
+	<channel-type id="power1">
+		<item-type>Number</item-type>
+		<label>Power F1</label>
+		<description>Power parameter</description>
+	</channel-type>
+	<channel-type id="power2">
+		<item-type>Number</item-type>
+		<label>Power F2</label>
+		<description>Power parameter</description>
+	</channel-type>
+	<channel-type id="power3">
+		<item-type>Number</item-type>
+		<label>Power F3</label>
 		<description>Power parameter</description>
 	</channel-type>
 </thing:thing-descriptions>
