@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
             } else {
                 updateStatus(ThingStatus.UNKNOWN);
             }
-
         }
         scheduler.execute(this::connect);
     }
@@ -95,6 +94,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 serial.setSerialPortParams(config.portSpeed, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
                 try {
+                    InputStream inputStream = this.inputStream;
                     if (inputStream != null) {
                         inputStream.close();
                     }
@@ -102,6 +102,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                     inputStream = null;
                 }
                 try {
+                    OutputStream outputStream = this.outputStream;
                     if (outputStream != null) {
                         outputStream.close();
                     }
@@ -120,7 +121,6 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Powermeter does not answer");
                 }
-
             } catch (final IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
                 logger.error("{}", ex.getMessage());
@@ -145,6 +145,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
         }
         synchronized (this) {
             try {
+                InputStream inputStream = this.inputStream;
                 if (inputStream != null) {
                     inputStream.close();
                 }
@@ -152,6 +153,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 inputStream = null;
             }
             try {
+                OutputStream outputStream = this.outputStream;
                 if (outputStream != null) {
                     outputStream.close();
                 }
@@ -164,8 +166,11 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 serial.close();
             }
             try {
-                serialPort.close();
-                serialPort = null;
+                SerialPort serialPort = this.serialPort;
+                if (serialPort != null) {
+                    serialPort.close();
+                    this.serialPort = null;
+                }
                 logger.debug("disconnected port");
             } catch (Exception ignored) {
             }
@@ -227,8 +232,9 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
         reqestString[reqestString.length - 2] = byteStr[0];
         reqestString[reqestString.length - 1] = byteStr[1];
         StringBuilder sb = new StringBuilder(reqestString.length * 2);
-        for (byte b : reqestString)
+        for (byte b : reqestString) {
             sb.append(String.format("%02X ", b));
+        }
         logger.debug("   send: {}", sb);
 
         try {
@@ -238,8 +244,7 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                 out.flush();
                 Thread.sleep(200);
             }
-        } catch (IOException | InterruptedException e) {
-
+        } catch (IOException | InterruptedException ignored) {
         }
 
         byte[] frame = new byte[answerLenght];
@@ -250,8 +255,9 @@ public class MercuryEnergyMeterRS485BridgeHandler extends BaseBridgeHandler impl
                     in.read(frame);
                 }
                 StringBuilder sbl = new StringBuilder(frame.length * 2);
-                for (byte b : frame)
+                for (byte b : frame) {
                     sbl.append(String.format("%02X ", b));
+                }
                 logger.debug("receive: {}", sbl);
             } catch (IOException e1) {
                 logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);

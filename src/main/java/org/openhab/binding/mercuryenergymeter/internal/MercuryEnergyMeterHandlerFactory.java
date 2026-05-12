@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mercuryenergymeter", service = ThingHandlerFactory.class)
 public class MercuryEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(RS485_BRIDGE, MERCURY_POWERMETER_THING);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(RS485_BRIDGE, RS485_TCP_BRIDGE,
+            MERCURY_POWERMETER_THING);
     private final SerialPortManager serialPortManager;
 
     @Activate
@@ -58,6 +59,9 @@ public class MercuryEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
         if (RS485_BRIDGE.equals(thingTypeUID)) {
             return new MercuryEnergyMeterRS485BridgeHandler((Bridge) thing, serialPortManager);
+        }
+        if (RS485_TCP_BRIDGE.equals(thingTypeUID)) {
+            return new MercuryEnergyMeterRS485TCPBridgeHandler((Bridge) thing);
         }
         if (MERCURY_POWERMETER_THING.equals(thingTypeUID)) {
             return new MercuryEnergyMeter203tdHandler(thing);

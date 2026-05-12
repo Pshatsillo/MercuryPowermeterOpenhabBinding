@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,4 +29,7 @@ public class MercuryEnergyMeterConfiguration {
     public int pollPeriod = 10;
     public int portSpeed = 9600;
     public int userpassword;
+    public String host = "";
+    public String port = "";
+    public String netaddress = "";
 }

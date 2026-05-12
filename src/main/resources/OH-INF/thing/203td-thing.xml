@@ -4,9 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="energymeter203td">
+	<thing-type id="energymeter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="rs485"/>
+			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 
 		<label>Thing for Mercury 203.2TD series</label>
@@ -38,6 +39,11 @@
 				<label>Password</label>
 				<description>Password for user access to energy meter (6 digits). Leave it default if you don't know</description>
 				<default>111111</default>
+			</parameter>
+			<parameter name="netaddress" type="integer">
+				<label>Net address</label>
+				<description>Network address of meter. Leave 0 if single</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>

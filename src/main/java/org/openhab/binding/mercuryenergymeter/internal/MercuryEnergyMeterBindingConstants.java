@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,8 @@ public class MercuryEnergyMeterBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID RS485_BRIDGE = new ThingTypeUID(BINDING_ID, "rs485");
-    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "energymeter203td");
+    public static final ThingTypeUID RS485_TCP_BRIDGE = new ThingTypeUID(BINDING_ID, "tcp");
+    public static final ThingTypeUID MERCURY_POWERMETER_THING = new ThingTypeUID(BINDING_ID, "energymeter");
 
     // List of all Channel ids
 }
