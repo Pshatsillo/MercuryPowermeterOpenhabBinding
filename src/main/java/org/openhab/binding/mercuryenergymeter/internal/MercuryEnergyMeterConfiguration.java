@@ -31,5 +31,5 @@ public class MercuryEnergyMeterConfiguration {
     public int userpassword;
     public String host = "";
     public String port = "";
-    public String netaddress = "";
+    public int netaddress = 0;
 }

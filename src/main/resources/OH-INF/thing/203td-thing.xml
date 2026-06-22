@@ -28,6 +28,7 @@
 			<channel id="power1" typeId="power1"/>
 			<channel id="power2" typeId="power2"/>
 			<channel id="power3" typeId="power3"/>
+			<channel id="currentTarif" typeId="currentTarif"/>
 		</channels>
 		<config-description>
 			<parameter name="pollPeriod" type="integer" min="0" unit="s">
@@ -121,5 +122,10 @@
 		<item-type>Number</item-type>
 		<label>Power F3</label>
 		<description>Power parameter</description>
+	</channel-type>
+	<channel-type id="currentTarif">
+		<item-type>Number</item-type>
+		<label>Tarif</label>
+		<description>Active tarif plan</description>
 	</channel-type>
 </thing:thing-descriptions>

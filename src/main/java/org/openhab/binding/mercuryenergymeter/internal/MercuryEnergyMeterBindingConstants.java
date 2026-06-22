@@ -38,6 +38,7 @@ public class MercuryEnergyMeterBindingConstants {
     public static final String CHANNEL_POWER_1 = "power1";
     public static final String CHANNEL_POWER_2 = "power2";
     public static final String CHANNEL_POWER_3 = "power3";
+    public static final String CHANNEL_CURRENT_TARIF = "currentTarif";
 
     private static final String BINDING_ID = "mercuryenergymeter";
 

@@ -28,15 +28,37 @@ public class MercuryEnergyMeterPooler {
 
     @Nullable
     MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler;
+    @Nullable
+    public MercuryEnergyMeterRS485TCPBridgeHandler tcpbridge;
     public byte[] request;
     public byte[] response;
+    public int responseLength;
     @Nullable
     Channel channel;
+    @Nullable
+    MercuryEnergyMeterType type;
 
     public MercuryEnergyMeterPooler() {
         mercuryEnergyMeter203tdHandler = null;
         request = new byte[0];
         response = new byte[0];
         channel = null;
+        tcpbridge = null;
+        responseLength = 0;
+        type = null;
     }
+}
+
+/**
+ * The {@link MercuryEnergyMeterType} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Petr Shatsillo - Initial contribution
+ */
+@NonNullByDefault
+enum MercuryEnergyMeterType {
+    OPEN_CONNECT,
+    CLOSE_CONNECT,
+    PARAMETERS,
+    REQUEST
 }

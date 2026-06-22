@@ -58,6 +58,8 @@ public class MercuryEnergyMeterDiscoveryService extends AbstractDiscoveryService
                 for (int i = 1; i < 241; i++) {
                     MercuryEnergyMeterPooler pooler = new MercuryEnergyMeterPooler();
                     pooler.request = new byte[] { (byte) i, 0x00 };
+                    pooler.tcpbridge = tcpbridge;
+                    pooler.responseLength = 4;
                     tcpbridge.sendMessage(pooler);
                 }
             });
@@ -68,15 +70,18 @@ public class MercuryEnergyMeterDiscoveryService extends AbstractDiscoveryService
     protected synchronized void stopScan() {
         if (!mercuryEnergyMeterPoolerList.isEmpty()) {
             mercuryEnergyMeterPoolerList.forEach(pooler -> {
-
-                ThingUID thingUID = new ThingUID(MERCURY_POWERMETER_THING,
-                        "energyMeter_" + String.format("%d", pooler.response[0] & 0xFF));
-                DiscoveryResult resultS = DiscoveryResultBuilder.create(thingUID)
-                        .withLabel("Mercury net address " + String.format("%d", pooler.response[0] & 0xFF))
-                        .withProperty("netaddress", pooler.response[0] & 0xFF).build();
-                thingDiscovered(resultS);
+                MercuryEnergyMeterRS485TCPBridgeHandler tcpbridge = pooler.tcpbridge;
+                if (tcpbridge != null) {
+                    ThingUID thingUID = new ThingUID(MERCURY_POWERMETER_THING,
+                            "bridge_" + tcpbridge.getThing().getUID().getId() + "_energyMeter_"
+                                    + String.format("%d", pooler.response[0] & 0xFF));
+                    DiscoveryResult resultS = DiscoveryResultBuilder.create(thingUID)
+                            .withLabel("Mercury net address " + String.format("%d", pooler.response[0] & 0xFF))
+                            .withProperty("netaddress", pooler.response[0] & 0xFF)
+                            .withBridge(tcpbridge.getThing().getUID()).build();
+                    thingDiscovered(resultS);
+                }
             });
-
         }
         super.stopScan();
     }

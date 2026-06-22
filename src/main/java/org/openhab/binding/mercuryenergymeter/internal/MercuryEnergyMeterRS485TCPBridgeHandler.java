@@ -21,6 +21,9 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -43,7 +46,8 @@ import org.slf4j.LoggerFactory;
  * @author Petr Shatsillo - Initial contribution
  */
 @NonNullByDefault
-public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
+public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler
+        implements MercuryEnergyMeterRS485Interface {
 
     private final Logger logger = LoggerFactory.getLogger(MercuryEnergyMeterRS485TCPBridgeHandler.class);
     private @Nullable Socket socket;
@@ -58,6 +62,8 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
     MercuryEnergyMeterPooler sendedRequest = null;
 
     private @Nullable ScheduledFuture<?> pollingTask;
+
+    private List<MercuryEnergyMeter203tdHandler> mercuryEnergyMeter203tdHandlerList = new ArrayList<>();
 
     public MercuryEnergyMeterRS485TCPBridgeHandler(Bridge thing) {
         super(thing);
@@ -97,7 +103,6 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
             this.writer = socket.getOutputStream();
             this.reader = socket.getInputStream();
             this.socket = socket;
-
         } catch (UnknownHostException | IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "");
             return;
@@ -134,6 +139,42 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
     private synchronized void disconnect() {
         logger.debug("disconnecting...");
         mercuryEnergyMeterRS485TCPBridgeHandlerList.remove(this);
+        Thread localSenderThread = this.senderThread;
+        if (localSenderThread != null && localSenderThread.isAlive()) {
+            localSenderThread.interrupt();
+        }
+
+        Thread localReaderThread = this.readerThread;
+        if (localReaderThread != null && localReaderThread.isAlive()) {
+            localReaderThread.interrupt();
+        }
+        Socket localSocket = this.socket;
+        if (localSocket != null) {
+            try {
+                localSocket.close();
+            } catch (IOException e) {
+                logger.debug("Error closing socket: {}", e.getMessage());
+            }
+            this.socket = null;
+        }
+        InputStream localReader = this.reader;
+        if (localReader != null) {
+            try {
+                localReader.close();
+            } catch (IOException e) {
+                logger.debug("Error closing reader: {}", e.getMessage());
+            }
+            this.reader = null;
+        }
+        OutputStream localWriter = this.writer;
+        if (localWriter != null) {
+            try {
+                localWriter.close();
+            } catch (IOException e) {
+                logger.debug("Error closing writer: {}", e.getMessage());
+            }
+            this.writer = null;
+        }
     }
 
     public synchronized void stopPolling() {
@@ -229,8 +270,9 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
                 MercuryEnergyMeterPooler sendedRequest = this.sendedRequest;
                 if (sendedRequest != null) {
                     StringBuilder sb = new StringBuilder(sendedRequest.request.length * 2);
-                    for (byte b : sendedRequest.request)
+                    for (byte b : sendedRequest.request) {
                         sb.append(String.format("%02X ", b));
+                    }
                     logger.debug("Sender thread writing command: {}", sb);
                     try {
                         OutputStream localWriter = this.writer;
@@ -262,47 +304,48 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
 
     private void readerThreadJob() {
         logger.debug("Reader thread started");
-        byte[] frame = new byte[8];
+        byte[] frame = new byte[26];
         try {
             InputStream localReader = this.reader;
             while (!Thread.interrupted() && localReader != null) {
                 while (localReader.available() > 0) {
-                    var dataLenght = localReader.read(frame);
-                    // if (dataLenght > 6) {
-                    StringBuilder sb = new StringBuilder(frame.length * 2);
-                    for (byte b : frame)
-                        sb.append(String.format("%02X ", b));
-                    logger.debug("response {}", sb);
-                    logger.debug("dataLenght {}", dataLenght);
-                    byte[] answer = new byte[dataLenght - 2];
-                    System.arraycopy(frame, 0, answer, 0, dataLenght - 2);
-                    byte[] crc = calcCRC(answer);
-                    if (crc[0] == frame[dataLenght - 2] && crc[1] == frame[dataLenght - 1]) {
-                        MercuryEnergyMeterPooler sendedRequest = this.sendedRequest;
-                        if (sendedRequest != null) {
-                            sendedRequest.response = answer;
+                    MercuryEnergyMeterPooler sendedRequest = this.sendedRequest;
+                    if (sendedRequest != null) {
+                        var dataLenght = localReader.read(frame);
+                        logger.debug("Receive {} bytes ({})", dataLenght, Arrays.toString(frame));
+                        if (sendedRequest.responseLength == dataLenght) {
+                            StringBuilder sb = new StringBuilder(frame.length * 2);
+                            for (byte b : frame) {
+                                sb.append(String.format("%02X ", b));
+                            }
+                            logger.debug("response {}", sb);
+                            byte[] answer = new byte[dataLenght - 2];
+                            System.arraycopy(frame, 0, answer, 0, dataLenght - 2);
+                            byte[] crc = calcCRC(answer);
+                            if (crc[0] == frame[dataLenght - 2] && crc[1] == frame[dataLenght - 1]) {
+                                sendedRequest.response = answer;
+                                MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler = sendedRequest.mercuryEnergyMeter203tdHandler;
+                                if (mercuryEnergyMeter203tdHandler != null) {
+                                    if (mercuryEnergyMeter203tdHandler.serno == frame[0]) {
+                                        mercuryEnergyMeter203tdHandler.response(sendedRequest);
+                                    }
+                                } else {
+                                    mercuryEnergyMeterPoolerList.add(sendedRequest);
+                                }
+                            }
+                        } else if (frame[1] == 0x5) {
+                            logger.debug("Communication channel is locked");
                             MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler = sendedRequest.mercuryEnergyMeter203tdHandler;
                             if (mercuryEnergyMeter203tdHandler != null) {
-                                // if (mercuryEnergyMeter203tdHandler.address[0] == frame[1]
-                                // && mercuryEnergyMeter203tdHandler.address[1] == frame[2]) {
-                                // dooyaCurtainsHandler.response(sendedRequest);
-                            } else {
-                                mercuryEnergyMeterPoolerList.add(sendedRequest);
+                                mercuryEnergyMeter203tdHandler.openChannel();
                             }
                         }
+                        this.sendedRequest = null;
+                        frame = new byte[26];
+                    } else {
+                        localReader.read(frame);
+                        frame = new byte[26];
                     }
-                    // // dooyaCurtainsHandlerList.forEach(handler -> {
-                    // // logger.debug("{} handler {}", handler.getThing().getLabel(),
-                    // // handler.getThing().getUID());
-                    // // if (handler.address[0] == finalFrame[1] && handler.address[1] == finalFrame[2]) {
-                    // // handler.response(finalFrame);
-                    // // }
-                    // // });
-                    // frame = new byte[8];
-                    // }
-                    // }
-                    // }
-                    // }
                 }
             }
         } catch (InterruptedIOException e) {
@@ -321,6 +364,15 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
         connect();
     }
 
+    @Override
+    public List<MercuryEnergyMeterPooler> getRequestsList() {
+        return List.of();
+    }
+
+    @Override
+    public void addRequestsList(MercuryEnergyMeterPooler pooler) {
+    }
+
     public void sendMessage(MercuryEnergyMeterPooler data) {
         logger.debug("sending data {}", data.request);
         byte[] byteStr = calcCRC(data.request);
@@ -330,6 +382,17 @@ public class MercuryEnergyMeterRS485TCPBridgeHandler extends BaseBridgeHandler {
         requestString[requestString.length - 1] = byteStr[1];
         data.request = requestString;
         sendQueue.add(data);
+    }
+
+    @Override
+    public void registerThing(MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler) {
+        mercuryEnergyMeter203tdHandlerList.add(mercuryEnergyMeter203tdHandler);
+    }
+
+    @Override
+    public void removeThing(MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler) {
+        List<MercuryEnergyMeter203tdHandler> mercuryEnergyMeter203tdHandlerList = this.mercuryEnergyMeter203tdHandlerList;
+        mercuryEnergyMeter203tdHandlerList.remove(mercuryEnergyMeter203tdHandler);
     }
 
     private byte[] calcCRC(byte[] data) {
