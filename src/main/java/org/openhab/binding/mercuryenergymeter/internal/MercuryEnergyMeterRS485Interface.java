@@ -32,7 +32,7 @@ public interface MercuryEnergyMeterRS485Interface extends BridgeHandler {
 
     void sendMessage(MercuryEnergyMeterPooler data);
 
-    void registerThing(MercuryEnergyMeter203tdHandler dooyaCurtainsHandler);
+    void registerThing(MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler);
 
-    void removeThing(MercuryEnergyMeter203tdHandler dooyaCurtainsHandler);
+    void removeThing(MercuryEnergyMeter203tdHandler mercuryEnergyMeter203tdHandler);
 }

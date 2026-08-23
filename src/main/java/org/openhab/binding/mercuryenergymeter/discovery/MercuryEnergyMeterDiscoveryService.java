@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mercuryenergymeter.internal.MercuryEnergyMeterPooler;
 import org.openhab.binding.mercuryenergymeter.internal.MercuryEnergyMeterRS485BridgeHandler;
 import org.openhab.binding.mercuryenergymeter.internal.MercuryEnergyMeterRS485TCPBridgeHandler;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MercuryEnergyMeterDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(MercuryEnergyMeterDiscoveryService.class);
-    public static @Nullable List<MercuryEnergyMeterRS485BridgeHandler> mercuryEnergyMeterRS485BridgeHandlerList = new ArrayList<>();
+    public static List<MercuryEnergyMeterRS485BridgeHandler> mercuryEnergyMeterRS485BridgeHandlerList = new ArrayList<>();
     public static List<MercuryEnergyMeterRS485TCPBridgeHandler> mercuryEnergyMeterRS485TCPBridgeHandlerList = new ArrayList<>();
     public static List<MercuryEnergyMeterPooler> mercuryEnergyMeterPoolerList = new ArrayList<>();
 

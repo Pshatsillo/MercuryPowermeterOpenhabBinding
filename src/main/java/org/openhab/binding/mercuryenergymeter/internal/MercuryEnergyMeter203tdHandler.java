@@ -149,7 +149,7 @@ public class MercuryEnergyMeter203tdHandler extends BaseThingHandler {
     }
 
     private void poll() {
-        //var status = getThing().getStatus();
+        // var status = getThing().getStatus();
         if (getThing().isEnabled()) {
             for (Channel channel : getThing().getChannels()) {
                 if (isLinked(channel.getUID().getId())) {
